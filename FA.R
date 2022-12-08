@@ -76,6 +76,11 @@ plot(dados_fa_none$loadings[, 1],
     xlim = c(-1, 1),
     main = "No rotation"
 )
+text(dados_fa_none$loadings[, 1] - 0.08,
+    dados_fa_none$loadings[, 2] + 0.08,
+    colnames(dados),
+    col = "blue"
+)
 abline(h = 0, v = 0)
 
 plot(dados_fa_varimax$loadings[, 1],
@@ -101,5 +106,10 @@ plot(dados_fa_promax$loadings[, 1],
     ylim = c(-1, 1),
     xlim = c(-1, 1),
     main = "Promax rotation"
+)
+text(dados_fa_promax$loadings[, 1] - 0.08,
+    dados_fa_promax$loadings[, 2] + 0.08,
+    colnames(dados),
+    col = "blue"
 )
 abline(h = 0, v = 0)
