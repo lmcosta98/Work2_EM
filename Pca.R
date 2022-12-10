@@ -13,8 +13,12 @@ pcas <- prcomp(dadosx,scale=TRUE)
 #biplot(pcas)
 a=prcomp(dadosx,scale=TRUE)
 b=summary(a)
-# biplot preservando a m?trica das colunas (biplot cl?ssico, segundo Gabriel)
-biplot(a,choices=1:2,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len = 0.05,xlab=paste(" PC1  (", (round(100*b$importance[2,1],digits=1)), " % )"),
+print(range(pcas$x[,5]))
+print(pcas[1:2])
+plot(d)
+plot(a)
+# biplot preservando a m?trica das colunas
+biplot(a,choices=1:6,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len = 0.05,xlab=paste(" PC1  (", (round(100*b$importance[2,1],digits=1)), " % )"),
        ylab=paste(" PC2  (", (round(100*b$importance[2,2],digits=1)), " % )"),var.axes=TRUE,  scale=1,  main="biplot")
 
 #autoplot(, x = 1, y = 2, colour = "Species",
@@ -23,7 +27,7 @@ biplot(a,choices=1:2,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len 
 #         loadings.label.colour = c("blue", "red", NA, NA),
 #         main = "biplot")
 
-
+#Analysing Biplot
 # As we can see the countries with the number 14 and 15 are, respectively,
 # Japan and Korea are the ones that stand out, as they are independent from the rest
 # countries having no similarities. Country number 22(Norway) and 12(Ireland)
@@ -39,3 +43,44 @@ biplot(a,choices=1:2,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len 
 
 # d[22,]$Country
 # cor(dadosx,a$x)
+
+require(graphics)
+
+par(pty="s",
+    cex.main=1.2,
+    cex.lab=1,
+    font.main=2,
+    font.lab=2,
+    family="sans",
+    col.main="gray10",
+    col.lab="gray10",
+    fg="gray10",
+    las=1)
+
+plot.new()
+plot.window(xlim=c(-6,6),
+            ylim=c(-6,6),
+            asp=1)
+
+axis(side=1,
+     at=c(-6,-3,0,3,6),
+     labels=TRUE)
+
+axis(side=2,
+     at=c(-6,-3,0,3,6),
+     labels=TRUE)
+
+title(main = "Biplot for PCs",
+      line=3,
+      adj=0)
+title(xlab=paste(" PC1  (", round(summary(pcas)$importance[2]*100,digits=1), " % )",sep=""),
+      ylab=paste(" PC2  (", round(summary(pcas)$importance[5]*100,digits=1), " % )",sep=""),
+      line=2,
+      adj=0.5)
+
+points(x=pcas$x[,1:2],
+       pch=c(rep(16,times=1),
+             rep(17,times=1)),
+       cex=1,
+       col=c(rep("darkcyan",times=1),
+             rep("orangered",times=1)))
