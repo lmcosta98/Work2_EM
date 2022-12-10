@@ -18,14 +18,8 @@ print(pcas[1:2])
 plot(d)
 plot(a)
 # biplot preservando a m?trica das colunas
-biplot(a,choices=1:6,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len = 0.05,xlab=paste(" PC1  (", (round(100*b$importance[2,1],digits=1)), " % )"),
+biplot(a,choices=1:2,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len = 0.05,xlab=paste(" PC1  (", (round(100*b$importance[2,1],digits=1)), " % )"),
        ylab=paste(" PC2  (", (round(100*b$importance[2,2],digits=1)), " % )"),var.axes=TRUE,  scale=1,  main="biplot")
-
-#autoplot(, x = 1, y = 2, colour = "Species",
-#         loadings = TRUE, loadings.label = TRUE,
-#         loadings.colour = c("blue", "red", NA, NA),
-#         loadings.label.colour = c("blue", "red", NA, NA),
-#         main = "biplot")
 
 #Analysing Biplot
 # As we can see the countries with the number 14 and 15 are, respectively,
@@ -40,6 +34,25 @@ biplot(a,choices=1:6,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len 
 # 5(Denmark),26(Spain),are similar to each other. The countries 18(Luxembourg),27(Sweden),
 # 3(Belgium),13(Italy), 9(Germany),7(Finland),29(UK),20(Netherlands), are similar to each other.
 # 8(France), 11(Hungary),10(Greece) are also another group.
+
+dados2G<-kmeans(dadosx, 5)
+dados2G
+
+#Visualizar os cluster da k-medias:
+str(dados2G)
+a=prcomp(dadosx, scale=TRUE)
+plot(a$x[,1:5], col = dados2G$cluster, pch=19, main="kmeans, 5 grupos")
+#install.packages("cluster")
+library(cluster)
+D <- daisy(dadosx)
+plot(silhouette(dados2G$cluster, D),col= c("blue", "purple","orange","red","black"))
+#autoplot(, x = 1, y = 2, colour = "Species",
+#         loadings = TRUE, loadings.label = TRUE,
+#         loadings.colour = c("blue", "red", NA, NA),
+#         loadings.label.colour = c("blue", "red", NA, NA),
+#         main = "biplot")
+
+
 
 # d[22,]$Country
 # cor(dadosx,a$x)
@@ -60,6 +73,7 @@ par(pty="s",
 plot.new()
 plot.window(xlim=c(-6,6),
             ylim=c(-6,6),
+            zli~m=c(-6,6),
             asp=1)
 
 axis(side=1,
@@ -69,12 +83,16 @@ axis(side=1,
 axis(side=2,
      at=c(-6,-3,0,3,6),
      labels=TRUE)
+axis(side=3,
+     at=c(-6,-3,0,3,6),
+     labels=TRUE)
 
 title(main = "Biplot for PCs",
       line=3,
       adj=0)
 title(xlab=paste(" PC1  (", round(summary(pcas)$importance[2]*100,digits=1), " % )",sep=""),
       ylab=paste(" PC2  (", round(summary(pcas)$importance[5]*100,digits=1), " % )",sep=""),
+      zlab=paste(" PC3  (", round(summary(pcas)$importance[8]*100,digits=1), " % )",sep=""),
       line=2,
       adj=0.5)
 
