@@ -7,19 +7,15 @@ library(readxl)
 d<-read_excel("Time_Use_in_OECD_Countries_OECD_after.xlsx")
 View(d)
 dadosx<-d[,-1]
-#rownames(dadosx)<-d[,1]
 pca <- prcomp(dadosx)
 pcas <- prcomp(dadosx,scale=TRUE)
 #biplot(pcas)
-a=prcomp(dadosx,scale=TRUE)
-b=summary(a)
-print(range(pcas$x[,5]))
-print(pcas[1:2])
-plot(d)
-plot(a)
-# biplot preservando a m?trica das colunas
-biplot(a,choices=1:2,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len = 0.05,xlab=paste(" PC1  (", (round(100*b$importance[2,1],digits=1)), " % )"),
-       ylab=paste(" PC2  (", (round(100*b$importance[2,2],digits=1)), " % )"),var.axes=TRUE,  scale=1,  main="biplot")
+summa=summary(a)
+#print(pcas$x[,5])
+#print(pcas[1:2])
+# biplot preservando a metrica das colunas
+biplot(pcas,choices=1:2,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len = 0.05,xlab=paste(" PC1  (", (round(100*summa$importance[2,1],digits=1)), " % )"),
+       ylab=paste(" PC2  (", (round(100*summa$importance[2,2],digits=1)), " % )"),var.axes=TRUE,  scale=1,  main="biplot")
 
 #Analysing Biplot
 # As we can see the countries with the number 14 and 15 are, respectively,
@@ -35,6 +31,25 @@ biplot(a,choices=1:2,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len 
 # 3(Belgium),13(Italy), 9(Germany),7(Finland),29(UK),20(Netherlands), are similar to each other.
 # 8(France), 11(Hungary),10(Greece) are also another group.
 
+############ Variance Explained Vs Number PC's ################
+
+variance_index<-c(2,5,8,11,14,17,20,23,26,29,32,35,38,41)
+variance_eva <- c(0)
+#print(variance_eva)
+#print(variance_eva[length(variance_eva)])
+for (x in variance_index){
+    variance_eva<-append(variance_eva,variance_eva[length(variance_eva)]+round(summary(pcas)$importance[x]*100))
+}
+variance_eva=setdiff(variance_eva,0)
+print(variance_eva)
+
+plot(variance_eva, type="o", col="blue", xlab=paste("Number of PC's"),ylab=paste("Variance Explained (%)"))
+
+# Create a title with a red, bold/italic font
+title(main="Variance Explained Vs Number PC's", col.main="Black", font.main=4)
+
+
+############### Cluster ################
 dados2G<-kmeans(dadosx, 5)
 dados2G
 
@@ -46,6 +61,8 @@ plot(a$x[,1:5], col = dados2G$cluster, pch=19, main="kmeans, 5 grupos")
 library(cluster)
 D <- daisy(dadosx)
 plot(silhouette(dados2G$cluster, D),col= c("blue", "purple","orange","red","black"))
+
+
 #autoplot(, x = 1, y = 2, colour = "Species",
 #         loadings = TRUE, loadings.label = TRUE,
 #         loadings.colour = c("blue", "red", NA, NA),
@@ -57,6 +74,7 @@ plot(silhouette(dados2G$cluster, D),col= c("blue", "purple","orange","red","blac
 # d[22,]$Country
 # cor(dadosx,a$x)
 
+######### Trying To add more PC's Into one graph ############
 require(graphics)
 
 par(pty="s",
@@ -92,11 +110,11 @@ title(main = "Biplot for PCs",
       adj=0)
 title(xlab=paste(" PC1  (", round(summary(pcas)$importance[2]*100,digits=1), " % )",sep=""),
       ylab=paste(" PC2  (", round(summary(pcas)$importance[5]*100,digits=1), " % )",sep=""),
-      zlab=paste(" PC3  (", round(summary(pcas)$importance[8]*100,digits=1), " % )",sep=""),
+      #zlab=paste(" PC3  (", round(summary(pcas)$importance[8]*100,digits=1), " % )",sep=""),
       line=2,
       adj=0.5)
 
-points(x=pcas$x[,1:2],
+points(x=pcas$x[,1:5],
        pch=c(rep(16,times=1),
              rep(17,times=1)),
        cex=1,
