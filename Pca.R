@@ -2,18 +2,40 @@
 #install.packages("ggplot2")
 #install.packages("ggfortify")
 library(readxl)
-#library(ggplot2)
+library(ggplot2)
 #library(ggfortify)
 d<-read_excel("Time_Use_in_OECD_Countries_OECD_after.xlsx")
-View(d)
+#View(d)
 dadosx<-d[,-1]
 pca <- prcomp(dadosx)
 pcas <- prcomp(dadosx,scale=TRUE)
 #biplot(pcas)
-summa=summary(a)
+summa=summary(pcas)
 #print(pcas$x[,5])
 #print(pcas[1:2])
+
+
+###### Find best number os pc's ######
+
+variance = pcas$sdev^2 / sum(pcas$sdev^2)
+print(variance)
+qplot(c(1:14), variance) +
+  geom_line() +
+  geom_point(size=14)+
+  xlab("Principal Component") +
+  ylab("Variance Explained") +
+  ggtitle("Scree Plot") +
+  ylim(0, 1)
+###############
 # biplot preservando a metrica das colunas
+pcas.data<-data.frame(PC1=pcas$x[,1],
+                      PC2=pcas$x[,2],
+                      PC3=pcas$x[,3],
+                      PC4=pcas$x[,4],
+                      PC5=pcas$x[,5])
+plot(pcas.data,pch=5,col=c("blue","red","green","brown","pink")) # Check all 5 dim
+
+#Compare only 2 of them
 biplot(pcas,choices=1:2,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len = 0.05,xlab=paste(" PC1  (", (round(100*summa$importance[2,1],digits=1)), " % )"),
        ylab=paste(" PC2  (", (round(100*summa$importance[2,2],digits=1)), " % )"),var.axes=TRUE,  scale=1,  main="biplot")
 
