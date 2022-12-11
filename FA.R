@@ -8,11 +8,11 @@ library(GPArotation)
 library(readxl)
 
 time_used <- read_excel("datasets/Time_Use_in_OECD_Countries_OECD_after.xlsx")
-View(time_used[, -1])
+View(time_used)
 
 dados <- time_used[, -1]
 
-## Non Normalized data
+## To Normalize the data
 r_matrix <- cov(dados)
 
 af_quartimax <- principal(
@@ -26,12 +26,12 @@ af_quartimax <- principal(
 
 ########
 # Obten��o das estimativas das pontua��es (factor scores)
-factor.scores(dados, f = af_quartimax, method = c("Bartlett"))
+factor.scores(r_matrix, f = af_quartimax, method = c("Bartlett"))
 
 ########
 # Extra��o dos fatores via Maxima verosimilhan�a
 af_varimax <- factanal(
-    dados,
+    r_matrix,
     factors = 2,
     scores = c("Bartlett"),
     rotation = "varimax",
@@ -54,10 +54,10 @@ parallel_analysis
 plotnScree(parallel_analysis)
 
 # C�lculo do KMO e MSA
-print(KMO(dados), digits = 3)
+print(KMO(r_matrix), digits = 3)
 
 # Teste de Bartlett
-cortest.bartlett(cor(dados), n = nrow(dados))
+cortest.bartlett(cor(r_matrix), n = nrow(dados))
 
 
 
