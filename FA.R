@@ -87,11 +87,12 @@ coul <- colorRampPalette(brewer.pal(11, "BrBG"))(50)
 
 a <- fit$scores
 rownames(a) <- tmp$Country
+colnames(a) <- c("F1", "F2", "F3", "F4")
 heatmap(a, scale = "column", col = coul, par = 1)
-abline(h = 0.66, col = "red", lwd = 2, lty = 2)
-abline(h = 0.58, col = "red", lwd = 2, lty = 2)
+abline(h = 0.685, col = "red", lwd = 2, lty = 2)
+abline(h = 0.60, col = "red", lwd = 2, lty = 2)
 legend(
-    0.15, 0.95,
+    0, 1,
     ncol = 3, legend = c("-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"),
     fill = colorRampPalette(brewer.pal(11, "BrBG"))(9)
 )
