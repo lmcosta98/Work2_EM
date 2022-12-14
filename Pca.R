@@ -1,11 +1,14 @@
 #install.packages("readxl")
 #install.packages("ggplot2")
 #install.packages("ggfortify")
+#install.packages("NbClust", dependencies = TRUE)
 library(readxl)
 library(ggplot2)
+library(NbClust)
 #library(ggfortify)
-d<-read_excel("Time_Use_in_OECD_Countries_OECD_after.xlsx")
+d<-read_excel("Time_Use.xlsx")
 #View(d)
+names<-d[1]
 dadosx<-d[,-1]
 pca <- prcomp(dadosx)
 pcas <- prcomp(dadosx,scale=TRUE)
@@ -21,11 +24,11 @@ variance = pcas$sdev^2 / sum(pcas$sdev^2)
 print(variance)
 qplot(c(1:14), variance) +
   geom_line() +
-  geom_point(size=14)+
+  geom_point(size=2)+
   xlab("Principal Component") +
   ylab("Variance Explained") +
-  ggtitle("Scree Plot") +
-  ylim(0, 1)
+  ggtitle("Find Best Number of PC's") +
+  ylim(0, 0.30)
 ###############
 # biplot preservando a metrica das colunas
 pcas.data<-data.frame(PC1=pcas$x[,1],
@@ -72,18 +75,40 @@ title(main="Variance Explained Vs Number PC's", col.main="Black", font.main=4)
 
 
 ############### Cluster ################
-dados2G<-kmeans(dadosx, 5)
+library(NbClust)
+a=prcomp(dadosx, scale=TRUE)
+print(a)
+dados2G<-kmeans(a$x, 5)
 dados2G
 
 #Visualizar os cluster da k-medias:
 str(dados2G)
 a=prcomp(dadosx, scale=TRUE)
+nc <- NbClust(a$x,min.nc=3,max.nc=15,method="kmeans")
 plot(a$x[,1:5], col = dados2G$cluster, pch=19, main="kmeans, 5 grupos")
 #install.packages("cluster")
 library(cluster)
 D <- daisy(dadosx)
-plot(silhouette(dados2G$cluster, D),col= c("blue", "purple","orange","red","black"))
+sil_cl <- silhouette(dados2G$cluster, D)
+rownames(sil_cl) <- names$Country
+plot(sil_cl, col = c("blue", "purple","orange","red","black"),cex.names = par("cex.axis"))
 
+
+#HEATMAP
+library(RColorBrewer)
+coul <- colorRampPalette(brewer.pal(11, "BrBG"))(50)
+
+cen <- a$x
+rownames(cen) <- names$Country
+colnames(cen) <- c("F1", "F2", "F3", "F4")
+heatmap(cen, scale = "column", col = coul, par = 1)
+abline(h = 0.685, col = "red", lwd = 2, lty = 2)
+abline(h = 0.60, col = "red", lwd = 2, lty = 2)
+legend(
+  0, 1,
+  ncol = 3, legend = c("-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"),
+  fill = colorRampPalette(brewer.pal(11, "BrBG"))(9)
+)
 
 #autoplot(, x = 1, y = 2, colour = "Species",
 #         loadings = TRUE, loadings.label = TRUE,
