@@ -79,6 +79,9 @@ D <- daisy(fit$scores)
 tmp <- time_used[1]
 sil_cl <- silhouette(kmeans_varimax$cluster, D)
 
+dados <-read.csv("/Users/luismiguel/Desktop/Uni/EM/2022/Work2_EM/datasets/Time_Happiness_GDP.csv")
+
+
 rownames(sil_cl) <- tmp$Country
 plot(sil_cl, col = c("#446455", "#FDD262", "#D3DDDC"), cex.names = par("cex.axis"))
 
