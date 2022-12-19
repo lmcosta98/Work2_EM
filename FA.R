@@ -1,15 +1,11 @@
-install.packages("psych", dependencies = TRUE)
-install.packages("GPArotation", dependencies = TRUE)
-install.packages("nFactors", dependencies = TRUE)
-install.packages("wesanderson", dependencies = TRUE)
-install.packages("NbClust", dependencies = TRUE)
+install.packages(c("wesanderson", "NbClust", "nFactors", "GPArotation", "psych"), dependencies = TRUE)
 
-library(nFactors) # to help determine the number of factors/components to retain
+library(nFactors)
 library(psych)
 library(GPArotation)
-library(readxl)
 library(cluster)
 library(NbClust)
+library(readxl)
 
 # Just to add more colours
 library("wesanderson")
@@ -33,7 +29,6 @@ dados <- dados[, !(names(dados) %in% to_remove)] # Remove listed variables from 
 KMO(dados)
 mydat <- dados[, KMO(dados)$MSAi > 0.4] # Get rid of all variables with MSA < 0.50
 dados <- mydat
-
 KMO(dados)
 
 ## Other options and respective overall MSA
@@ -43,28 +38,43 @@ KMO(dados)
 
 
 ## Bartlett test
-cortest.bartlett(dados)
+cortest.bartlett(cor(dados),n=nrow(dados))
 
 r_matrix <- cov(dados)
 
-ev <- eigen(cor(dados)) # get eigenvalues
-ev$values
-
 ## Scree Test
-parallel_analysis <- nScree(dados, model = "factors")
+parallel_analysis <- nScree(r_matrix, model = "factors")
 # Note that model factors is required otherwise the result will be for components
 ## If the above command does not work due to version, use the one below
 # parallel_analysis <- nScree(data.frame(dados), model = "factors") # Note that model factors is required
 parallel_analysis
 plotnScree(parallel_analysis)
 
-n_factors <- 4 # This is for four factors. You can change this as needed.
+library(tidyr)
+library(ggplot2)
+
+par(mfrow = c(4, 3))
+
+for (i in colnames(dados)){      # for-loop over columns
+  hist(dados[[i]], main=i, col = "#D3DDDC")
+}
+
+n_factors <- 4
+F<-principal(dados, nfactors,residuals = TRUE, rotate = "varimax", covar=FALSE)
+print(F, digits=2, cutoff=0.4, sort=TRUE)
+
 fit <- factanal(dados, n_factors, rotation = "varimax", scores = c("Bartlett"))
-print(fit, digits = 2, cutoff = 0.3, sort = TRUE)
+print(fit, digits = 2, cutoff = 0.4, sort = TRUE)
+
+par(mfrow = c(1, 2))
+loads2 <- F$loadings
+fa.diagram(loads2)
+
 
 loads <- fit$loadings
 fa.diagram(loads)
 
+F$scores
 fit$scores
 
 ## Clustering after teh FA
@@ -79,9 +89,6 @@ D <- daisy(fit$scores)
 tmp <- time_used[1]
 sil_cl <- silhouette(kmeans_varimax$cluster, D)
 
-dados <-read.csv("/Users/luismiguel/Desktop/Uni/EM/2022/Work2_EM/datasets/Time_Happiness_GDP.csv")
-
-
 rownames(sil_cl) <- tmp$Country
 plot(sil_cl, col = c("#446455", "#FDD262", "#D3DDDC"), cex.names = par("cex.axis"))
 
@@ -93,7 +100,7 @@ rownames(a) <- tmp$Country
 colnames(a) <- c("F1", "F2", "F3", "F4")
 heatmap(a, scale = "column", col = coul, par = 1)
 abline(h = 0.685, col = "red", lwd = 2, lty = 2)
-abline(h = 0.60, col = "red", lwd = 2, lty = 2)
+abline(h = 0.60, col = "red", lwd = 2, lty = 2) # cenas
 legend(
     0, 1,
     ncol = 3, legend = c("-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"),
