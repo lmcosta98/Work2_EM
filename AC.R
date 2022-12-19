@@ -16,6 +16,7 @@ library(RColorBrewer)
 # Load the datasets
 dados <-read.csv("/Users/luismiguel/Desktop/Uni/EM/2022/Work2_EM/datasets/Time_Happiness_GDP.csv")
 data <- read.csv("/Users/luismiguel/Desktop/Uni/EM/2022/Work2_EM/datasets/Happiness.csv")
+n_dados <- read.csv("/Users/luismiguel/Desktop/Uni/EM/2022/Work2_EM/datasets/Happiness_GDP.csv")
 
 # Dataframes for clustering
 tmp <- dados[, -1] # cluster based on time spent
@@ -24,7 +25,73 @@ dados_clust <- tmp[, -c(1:2)]
 dados_viz <- tmp[, c(1:2)] # auxiliar for plotting
 dados_viz_2 <- dados_viz # another auxiliar for plotting
 dados_hap <- tmp[, -2] # cluster based only on happiness
-dados_hap
+dados_hap_gdp <- tmp[, c(1:2)]
+dados_hap_gdp
+
+#### Clustering based on Happiness and GDP #####
+n_dados_clust <- n_dados[, -1]
+n_dados_clust
+# Find out the optimal number of clusters
+nc <- NbClust(n_dados_clust, min.nc = 2, max.nc = 15, method = "kmeans") # Ideal number found is 3 clusters
+kmeans_hap_gdp <- kmeans(n_dados_clust, 3, nstart = 20)
+kmeans_hap_gdp # By analyzing the clusters we can see that the countries tend to be
+               # assigned to the same cluster on the several years. This is to be expected since 
+               # GDP and happiness do not vary much in around 10 years.
+               # Can make use of this to cluster only on the happiness data from 2020.
+
+# Plot the silhouette graph
+d <- daisy(n_dados_clust)
+plot(silhouette(kmeans_hap_gdp$cluster, d), col= c("blue", "red", "green"))#, "green", "yellow"))
+
+# Obtain the ARI and Avg Silhouette values
+res=cluster.stats(dist(n_dados_clust),clustering=kmeans_hap_gdp$cluster)
+resultadoIndices <- matrix(c(res$corrected.rand,res$avg.silwidth), byrow=TRUE,1,2)
+colnames(resultadoIndices) <- c("ARI","avg.Silhw")
+round(resultadoIndices, 3) # Small avg sil
+
+heatmap(as.matrix(dados_hap_gdp), scale = "column", col = coul)
+heatmap(as.matrix(tmp), scale = "column", col = coul)
+
+# clustering using only the 2020 data for happiness and gdp
+nc <- NbClust(dados_hap_gdp, min.nc = 2, max.nc = 15, method = "kmeans") # Ideal number found is 3 clusters
+kmeans_hap_gdp_2020 <- kmeans(dados_hap_gdp, 3, nstart = 20)
+kmeans_hap_gdp_2020 # By analyzing the clusters we can see t
+d <- daisy(dados_hap_gdp)
+plot(silhouette(kmeans_hap_gdp_2020$cluster, d), col= c("blue", "red", "green"))#, "green", "yellow"))
+
+res=cluster.stats(dist(dados_hap_gdp),clustering=kmeans_hap_gdp_2020$cluster)
+resultadoIndices <- matrix(c(res$corrected.rand,res$avg.silwidth), byrow=TRUE,1,2)
+colnames(resultadoIndices) <- c("ARI","avg.Silhw")
+round(resultadoIndices, 3) # Small avg sil
+
+
+# Plot the clusters in relation to happiness and gdp
+n_dados$cluster <- kmeans_hap_gdp$cluster
+ggplot(n_dados, aes(x=GDP_Per_Capita, y=Happiness))+geom_point(aes(color=cluster))+scale_color_viridis(option = "A")
+
+# Plotting frequency of happiness responses and comparing total vs cluster happiness
+hist(n_dados$Happiness, xlab = "Happiness", main="Happiness on complete dataset")
+
+#### Need to add the lines for the total frequency
+data_clust_1 <- n_dados[n_dados$cluster == 1,]
+hist(data_clust_1$Happiness, xlab = "Happiness", main="Happiness on cluster 1")
+#hist(data_clust_1$GDP_Per_Capita, xlab = "GDP per Capita", main="GDP on cluster 1")
+
+data_clust_2 <- n_dados[n_dados$cluster == 2,]
+hist(data_clust_2$Happiness, xlab = "Happiness", main="Happiness on cluster 2")
+#hist(data_clust_2$GDP_Per_Capita, xlab = "GDP per Capita", main="GDP on cluster 2")
+
+data_clust_3 <- n_dados[n_dados$cluster == 3,]
+hist(data_clust_3$Happiness, xlab = "Happiness", main="Happiness on cluster 3")
+#hist(data_clust_3$GDP_Per_Capita, xlab = "GDP per Capita", main="GDP on cluster 3")
+
+# checking countries per cluster
+dados_hap_gdp$cluster <- kmeans_hap_gdp_2020$cluster
+dados_hap_gdp[dados_hap_gdp$cluster == 1,] # Countries in cluster 1
+dados_hap_gdp[dados_hap_gdp$cluster == 2,] # Countries in cluster 2
+dados_hap_gdp[dados_hap_gdp$cluster == 3,] # Countries in cluster 3
+
+
 
 
 #### Clustering based on time spent #####
@@ -71,9 +138,7 @@ heatmap(as.matrix(dados_clust), scale = "row", col = coul)
 
 
 
-
-
-#### Clustering also taking Happiness into accout #####  
+#### Clustering based on Time spent and Happiness #####  
 
 # Find out the optimal number of clusters
 nc <- NbClust(dados_hap, min.nc = 3, max.nc = 15, method = "kmeans")
@@ -90,7 +155,7 @@ d <- daisy(as.matrix(dados_hap))
 plot(silhouette(kmeans_clust_hap$cluster, d))#, col= c("blue", "red", "green", "yellow"))
 
 # Obtain the ARI and Avg Silhouette values
-res=cluster.stats(dist(dados_clust_hap),clustering=kmeans_clust$cluster)
+res=cluster.stats(dist(dados_clust_hap),clustering=kmeans_clust_hap$cluster)
 resultadoIndices <- matrix(c(res$corrected.rand,res$avg.silwidth), byrow=TRUE,1,2)
 colnames(resultadoIndices) <- c("ARI","avg.Silhw")
 round(resultadoIndices, 3)
@@ -132,5 +197,3 @@ data_clust_4 <- data[data$cluster == 4,]
 hist(data_clust_4$Happiness.x, xlab = "Happiness", main="Happiness on cluster 4")
 #hist(data_clust_4$GDP_Per_Capita, xlab = "GDP per Capita", main="GDP on cluster 4")
 
-
-#
