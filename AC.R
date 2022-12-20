@@ -41,7 +41,9 @@ kmeans_hap_gdp # By analyzing the clusters we can see that the countries tend to
 
 # Plot the silhouette graph
 d <- daisy(n_dados_clust)
-plot(silhouette(kmeans_hap_gdp$cluster, d), col= c("blue", "red", "green"))#, "green", "yellow"))
+sil <- silhouette(kmeans_hap_gdp$cluster, d)
+rownames(sil) <- n_dados$Countries
+plot(sil, col= c("blue", "red", "green"))#, "green", "yellow"))
 
 # Obtain the ARI and Avg Silhouette values
 res=cluster.stats(dist(n_dados_clust),clustering=kmeans_hap_gdp$cluster)
@@ -57,7 +59,9 @@ nc <- NbClust(dados_hap_gdp, min.nc = 2, max.nc = 15, method = "kmeans") # Ideal
 kmeans_hap_gdp_2020 <- kmeans(dados_hap_gdp, 3, nstart = 20)
 kmeans_hap_gdp_2020 # By analyzing the clusters we can see t
 d <- daisy(dados_hap_gdp)
-plot(silhouette(kmeans_hap_gdp_2020$cluster, d), col= c("blue", "red", "green"))#, "green", "yellow"))
+sil <- silhouette(kmeans_hap_gdp_2020$cluster, d)
+rownames(sil) <- dados$Countries
+plot(sil, col= c("blue", "red", "green"))#, "green", "yellow"))
 
 res=cluster.stats(dist(dados_hap_gdp),clustering=kmeans_hap_gdp_2020$cluster)
 resultadoIndices <- matrix(c(res$corrected.rand,res$avg.silwidth), byrow=TRUE,1,2)
@@ -109,7 +113,9 @@ dados_viz
 
 # Plot the silhouette graph
 d <- daisy(dados_clust)
-plot(silhouette(kmeans_clust$cluster, d), col= c("blue", "red"))#, "green", "yellow"))
+sil <- silhouette(kmeans_clust$cluster, d)
+rownames(sil) <- dados$Countries
+plot(sil, col= c("blue", "red", "green", "yellow"))
 # The shilhouettes all seem to be small, but lets check the ARI
 
 # Obtain the ARI and Avg Silhouette values
@@ -152,7 +158,9 @@ dados_viz_2$cluster <- kmeans_clust_hap$cluster
 dadoa_viz_2
 # Plot the silhouette graph
 d <- daisy(as.matrix(dados_hap))
-plot(silhouette(kmeans_clust_hap$cluster, d))#, col= c("blue", "red", "green", "yellow"))
+sil <- silhouette(kmeans_clust_hap$cluster, d)
+rownames(sil) <- dados$Countries
+plot(sil, col= c("blue", "red", "green", "yellow"))
 
 # Obtain the ARI and Avg Silhouette values
 res=cluster.stats(dist(dados_clust_hap),clustering=kmeans_clust_hap$cluster)
