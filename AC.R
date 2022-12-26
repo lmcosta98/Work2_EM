@@ -51,8 +51,10 @@ resultadoIndices <- matrix(c(res$corrected.rand,res$avg.silwidth), byrow=TRUE,1,
 colnames(resultadoIndices) <- c("ARI","avg.Silhw")
 round(resultadoIndices, 3) # Small avg sil
 
-heatmap(as.matrix(dados_hap_gdp), scale = "column", col = coul)
-heatmap(as.matrix(tmp), scale = "column", col = coul)
+coul <- colorRampPalette(brewer.pal(11, "BrBG"))(50)
+heatmap(as.matrix(n_dados_clust), scale = "column", col = coul)
+#heatmap(as.matrix(tmp), scale = "column", col = coul)
+
 
 # clustering using only the 2020 data for happiness and gdp
 nc <- NbClust(dados_hap_gdp, min.nc = 2, max.nc = 15, method = "kmeans") # Ideal number found is 3 clusters
@@ -68,10 +70,12 @@ resultadoIndices <- matrix(c(res$corrected.rand,res$avg.silwidth), byrow=TRUE,1,
 colnames(resultadoIndices) <- c("ARI","avg.Silhw")
 round(resultadoIndices, 3) # Small avg sil
 
+heatmap(as.matrix(dados_hap_gdp), scale = "column", col = coul)
+
 
 # Plot the clusters in relation to happiness and gdp
 n_dados$cluster <- kmeans_hap_gdp$cluster
-ggplot(n_dados, aes(x=GDP_Per_Capita, y=Happiness))+geom_point(aes(color=cluster))+scale_color_viridis(option = "A")
+ggplot(n_dados, aes(x=GDP_Per_Capita, y=Happiness))+geom_point(aes(color=cluster))+scale_color_viridis(option = "H")
 
 # Plotting frequency of happiness responses and comparing total vs cluster happiness
 hist(n_dados$Happiness, xlab = "Happiness", main="Happiness on complete dataset")
@@ -138,8 +142,7 @@ plot(hc_single, hang=-1, main="Distancia euclidiana, e vizinho-mais-proximo")
 # With single linkage we can't check the presence of distinct clusters, so we opt for complete linkage
 
 # Creating a heatmap to see relationships between countries and variables
-coul <- colorRampPalette(brewer.pal(11, "BrBG"))(50)
-heatmap(as.matrix(dados_clust), scale = "row", col = coul)
+heatmap(as.matrix(dados_clust), scale = "column", col = coul)
 #heatmap(as.matrix(dados_clust), scale = "column", col = coul)
 
 
@@ -172,7 +175,7 @@ round(resultadoIndices, 3)
 ggplot(dados_viz_2, aes(x=GDP_Per_Capita, y=Happiness))+geom_point(aes(color=cluster))+scale_color_viridis(option = "A")
 #ggplot(dados_viz_2, aes(x=Happiness, y=GDP_Per_Capita))+geom_point(aes(color=cluster))+scale_color_viridis(option = "A")
 
-heatmap(as.matrix(dados_hap), scale = "row", col = coul)
+heatmap(as.matrix(dados_hap), scale = "column", col = coul)
 
 # No significant difference found when including happiness, 
 # so we will use the results from the first clustering.
@@ -184,7 +187,7 @@ data <- merge(data, dados, by="Countries")
 #data <- data.frame(data)
 data
 
-
+# The same as above, can be removed
 # Plotting frequency of happiness responses and comparing total vs cluster happiness
 hist(data$Happiness.x, xlab = "Happiness", main="Happiness on complete dataset")
 
