@@ -6,14 +6,24 @@ library(GPArotation)
 library(cluster)
 library(NbClust)
 library(readxl)
+library(tidyr)
+library(ggplot2)
 
 # Just to add more colours
 library("wesanderson")
 library(RColorBrewer)
 
 time_used <- read_excel("datasets/Time_Use.xlsx")
-
 dados <- time_used[, -1]
+
+# Histogram
+par(mfrow = c(3, 5))
+
+for (i in colnames(dados)) { # for-loop over columns
+  hist(dados[[i]], main = i, col = "#D3DDDC")
+}
+
+
 ## Data cleaning
 ### Testing for high correlation, our dataset has 14 columns, so if this values returns more than 14 we might have columns that we can discard.
 sum(cor(dados) > 0.6)
@@ -38,7 +48,7 @@ KMO(dados)
 
 
 ## Bartlett test
-cortest.bartlett(cor(dados),n=nrow(dados))
+cortest.bartlett(cor(dados), n = nrow(dados))
 
 r_matrix <- cov(dados)
 
@@ -50,31 +60,28 @@ parallel_analysis <- nScree(r_matrix, model = "factors")
 parallel_analysis
 plotnScree(parallel_analysis)
 
-library(tidyr)
-library(ggplot2)
-
-par(mfrow = c(4, 3))
-
-for (i in colnames(dados)){      # for-loop over columns
-  hist(dados[[i]], main=i, col = "#D3DDDC")
-}
-
 n_factors <- 4
-F<-principal(dados, nfactors,residuals = TRUE, rotate = "varimax", covar=FALSE)
-print(F, digits=2, cutoff=0.4, sort=TRUE)
+fit_princ <- principal(
+  dados,
+  nfactors,
+  residuals = TRUE,
+  rotate = "varimax",
+  covar = FALSE,
+)
+print(fit_princ, digits = 2, cutoff = 0.4, sort = TRUE)
 
 fit <- factanal(dados, n_factors, rotation = "varimax", scores = c("Bartlett"))
 print(fit, digits = 2, cutoff = 0.4, sort = TRUE)
 
 par(mfrow = c(1, 2))
-loads2 <- F$loadings
+loads2 <- fit_princ$loadings
 fa.diagram(loads2)
 
 
 loads <- fit$loadings
 fa.diagram(loads)
 
-F$scores
+fit_princ$scores
 fit$scores
 
 ## Clustering after teh FA
@@ -90,21 +97,26 @@ tmp <- time_used[1]
 sil_cl <- silhouette(kmeans_varimax$cluster, D)
 
 rownames(sil_cl) <- tmp$Country
-plot(sil_cl, col = c("#446455", "#FDD262", "#D3DDDC"), cex.names = par("cex.axis"))
+plot(
+  sil_cl,
+  col = c("#446455", "#FDD262", "#D3DDDC"),
+  cex.names = par("cex.axis"),
+)
 
 ## Heatmap for the what can PT learn from the others
-coul <- colorRampPalette(brewer.pal(11, "BrBG"))(50)
+coul <- colorRampPalette(brewer.pal(9, "PuOr"))(50)
 
 a <- fit$scores
 rownames(a) <- tmp$Country
 colnames(a) <- c("F1", "F2", "F3", "F4")
-heatmap(a, scale = "column", col = coul, par = 1)
-abline(h = 0.685, col = "red", lwd = 2, lty = 2)
+heatmap(a, scale = "column", col = coul)
+abline(h = 0.68, col = "red", lwd = 2, lty = 2)
 abline(h = 0.60, col = "red", lwd = 2, lty = 2) # cenas
 legend(
-    0, 1,
-    ncol = 3, legend = c("-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"),
-    fill = colorRampPalette(brewer.pal(11, "BrBG"))(9)
+  0, 1,
+  ncol = 3,
+  legend = c("-100%", "-75%", "-50%", "-25%", "0%", "25%", "50%", "75%", "100%"),
+  fill = colorRampPalette(brewer.pal(9, "PuOr"))(9)
 )
 
 # ## Also not used in cluster after FA section
