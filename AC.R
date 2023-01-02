@@ -35,9 +35,6 @@ dados_hap_gdp
 # Setting color palette
 coul <- colorRampPalette(brewer.pal(3, "PuOr"))(50)
 
-myColors <- brewer.pal(5,"PuOr")
-names(myColors) <- levels(dat$grp)
-colScale <- scale_colour_manual(name = "grp",values = myColors)
 
 #### Clustering based on Happiness and GDP #####
 n_dados_clust <- n_dados[, -1]
@@ -85,7 +82,7 @@ round(resultadoIndices, 3) # Small avg sil
 heatmap(as.matrix(dados_hap_gdp), scale = "column", col = c("#446455", "#FDD262", "#D3DDDC", '#000000'))
 
 distances <-dist(dados_hap_gdp, method="euclidian") # Euclidean distance
-hc_complete = hclust(distances, method="complete") # Trying to obtain clusters that are more compact (data points more similiar to each)
+hc_complete = hclust(distances, method="complete") # Trying to obtain clusters that are more compact
 #hc_single = hclust(distances, method="single") # Trying to obtain fewer clusters
 dend <- as.dendrogram(hc_complete)
 dend <- dend %>% color_branches(k=4, col=c("red", "blue", "green", '#000000'))
@@ -104,21 +101,21 @@ ggplot(dados_viz, aes(x=log(GDP_Per_Capita), y=Happiness))+geom_point(aes(color=
 plot(log(dados_viz$GDP_Per_Capita), dados_viz$Happiness, col=colors, pch=19, main='K-means clusters', xlab='GDP per capita (log)', ylab='Life Satisfaction')
 legend('right', legend=c('Cluster 1', 'Cluster 2','Cluster 3'), col=c("#446455", "#FDD262", "#D3DDDC"), pch=19)
 
+# Plotting the continents to compare
 ggplot(dados_viz, aes(x=log(GDP_Per_Capita), y=Happiness, colour=Continent))+geom_point()
-# Plotting frequency of happiness responses and comparing total vs cluster happiness
+# No real connection could be seen as most of the countries on the dataset are european
 
-
-#### Need to add the lines for the total frequency
-# plotting the distrution of the answers regarding happines per country
+# Plotting the distrution of the answers regarding happines per cluster and also on the complete dataset
+# need to run the code for the first clustering for this to work
 data_clust_1 <- n_dados[n_dados$cluster == '1',]
 data_clust_2 <- n_dados[n_dados$cluster == '2',]
 data_clust_3 <- n_dados[n_dados$cluster == '3',]
 par(mfrow=c(2,2))
-hist(n_dados$Happiness, xlab = "Happiness", main="Happiness on complete dataset")
+hist(n_dados$Happiness, xlab = "Happiness", main="Happiness on the complete dataset", col='lightblue')
 hist(data_clust_1$Happiness, xlab = "Happiness", main="Happiness on cluster 1", col="#446455")
 hist(data_clust_2$Happiness, xlab = "Happiness", main="Happiness on cluster 2", col="#FDD262")
 hist(data_clust_3$Happiness, xlab = "Happiness", main="Happiness on cluster 3", col="#D3DDDC")
-
+dev.off()
 
 
 
@@ -166,15 +163,14 @@ heatmap(as.matrix(dados_clust), scale = "column", col = coul)
 #heatmap(as.matrix(dados_clust), scale = "column", col = coul)
 
 
-#### Clustering the variables of the time spent dataset
+
+#### Hierarchical Clustering of the variables of the time spent dataset
 cols.cor <- cor(dados_clust, use = "pairwise.complete.obs", method = "pearson") # using pearson correlation for clustering variables
 dist <- as.dist(1 - cols.cor)
 hc_complete = hclust(dist, method="complete")
 dend <- as.dendrogram(hc_complete)
 dend <- dend %>% color_branches(k=4)
 plot(dend, main="Pearson Correlation and nearest neighbour")
-dev.off()
-
 
 
 
