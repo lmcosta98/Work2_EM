@@ -91,11 +91,11 @@ plot(dend, main="Euclidean distance and furthest neighbour")
 
 
 # Plot the clusters in relation to happiness and gdp
-dados_viz$cluster <- kmeans_hap_gdp_2020$cluster
+dados_viz$cluster <- as.character(kmeans_hap_gdp_2020$cluster)
 dados_viz
 
 colors <- c("#446455", "#FDD262", "#D3DDDC")
-colors <- colors[dados_viz$cluster]
+colors <- colors[as.integer(dados_viz$cluster)]
 
 ggplot(dados_viz, aes(x=log(GDP_Per_Capita), y=Happiness))+geom_point(aes(color=cluster))+scale_color_manual(values=c("#446455", "#FDD262", "#D3DDDC"))
 plot(log(dados_viz$GDP_Per_Capita), dados_viz$Happiness, col=colors, pch=19, main='K-means clusters', xlab='GDP per capita (log)', ylab='Life Satisfaction')
