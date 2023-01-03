@@ -88,7 +88,10 @@ dend <- as.dendrogram(hc_complete)
 dend <- dend %>% color_branches(k=4, col=c("red", "blue", "green", '#000000'))
 plot(dend, main="Euclidean distance and furthest neighbour")
 #plot(hc_complete, hang=-1, main="Distancia euclidiana, e vizinho-mais-afastado")
+dev.off()
 
+heatmap(as.matrix(dados_hap_gdp), scale = "column", col = coul) # not realy usefull since we only have 2 variables
+                                                                # better to just use a dendrogram
 
 # Plot the clusters in relation to happiness and gdp
 dados_viz$cluster <- as.character(kmeans_hap_gdp_2020$cluster)
@@ -110,10 +113,10 @@ ggplot(dados_viz, aes(x=log(GDP_Per_Capita), y=Happiness, colour=Continent))+geo
 data_clust_1 <- n_dados[n_dados$cluster == '1',]
 data_clust_2 <- n_dados[n_dados$cluster == '2',]
 data_clust_3 <- n_dados[n_dados$cluster == '3',]
-par(mfrow=c(2,2))
-hist(n_dados$Happiness, xlab = "Happiness", main="Happiness on the complete dataset", col='lightblue')
-hist(data_clust_1$Happiness, xlab = "Happiness", main="Happiness on cluster 1", col="#446455")
-hist(data_clust_2$Happiness, xlab = "Happiness", main="Happiness on cluster 2", col="#FDD262")
+par(mfrow=c(2,2)) # the two algorithms were interchanging cluster 1 and 2, this plots the points correctly
+hist(n_dados$Happiness, xlab = "Happiness", main="Happiness complete dataset", col='lightblue')
+hist(data_clust_2$Happiness, xlab = "Happiness", main="Happiness on cluster 1", col="#446455")
+hist(data_clust_1$Happiness, xlab = "Happiness", main="Happiness on cluster 2", col="#FDD262")
 hist(data_clust_3$Happiness, xlab = "Happiness", main="Happiness on cluster 3", col="#D3DDDC")
 dev.off()
 
@@ -149,7 +152,6 @@ round(resultadoIndices, 3) # Small avg silhouette and a positive ARI, everything
 ggplot(dados_viz, aes(x=GDP_Per_Capita, y=Happiness))+geom_point(aes(color=cluster)) # It does not seem to be a connection
                                                                                 # between the cluster formed by time spent 
                                                                                 # and the happiness/gdp relationship
-
 # Creating a dendrogram to plot the clusters
 distances <-dist(dados_clust, method="euclidian") # Euclidean distance
 hc_complete = hclust(distances, method="complete") # Trying to obtain clusters that are more compact (data points more similiar to each)
@@ -165,7 +167,21 @@ heatmap(as.matrix(dados_clust), scale = "column", col = coul)
 
 
 #### Hierarchical Clustering of the variables of the time spent dataset
-cols.cor <- cor(dados_clust, use = "pairwise.complete.obs", method = "pearson") # using pearson correlation for clustering variables
+cols.cor <- cor(dados_clust_2, use = "pairwise.complete.obs", method = "pearson") # using pearson correlation for clustering variables
+dist <- as.dist(1 - cols.cor)
+hc_complete = hclust(dist, method="complete")
+dend <- as.dendrogram(hc_complete)
+dend <- dend %>% color_branches(k=4)
+plot(dend, main="Pearson Correlation and nearest neighbour")
+
+
+#### Hierarchical Clustering of the variables of the time spent dataset
+# Tried removing the same variables that were removed on Factor analysis
+dados_clust_2 <- dados_clust[,-1]
+dados_clust_2 <- dados_clust_2[,-9]
+dados_clust_2 <- dados_clust_2[,-c(10:11)]
+dados_clust_2
+cols.cor <- cor(dados_clust_2, use = "pairwise.complete.obs", method = "pearson") # using pearson correlation for clustering variables
 dist <- as.dist(1 - cols.cor)
 hc_complete = hclust(dist, method="complete")
 dend <- as.dendrogram(hc_complete)
