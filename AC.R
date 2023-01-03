@@ -95,14 +95,19 @@ heatmap(as.matrix(dados_hap_gdp), scale = "column", col = coul) # not realy usef
 
 # Plot the clusters in relation to happiness and gdp
 dados_viz$cluster <- as.character(kmeans_hap_gdp_2020$cluster)
+dados_viz['Portugal',]$cluster <- 4
 dados_viz
 
-colors <- c("#446455", "#FDD262", "#D3DDDC")
+colors <- c("#446455", "#FDD262", "#D3DDDC", 'red')
 colors <- colors[as.integer(dados_viz$cluster)]
 
-ggplot(dados_viz, aes(x=log(GDP_Per_Capita), y=Happiness))+geom_point(aes(color=cluster))+scale_color_manual(values=c("#446455", "#FDD262", "#D3DDDC"))
-plot(log(dados_viz$GDP_Per_Capita), dados_viz$Happiness, col=colors, pch=19, main='K-means clusters', xlab='GDP per capita (log)', ylab='Life Satisfaction')
+plot(dados_viz$GDP_Per_Capita, dados_viz$Happiness, col=colors, pch=19, main='K-means clusters', xlab='GDP per capita', ylab='Life Satisfaction')
 legend('right', legend=c('Cluster 1', 'Cluster 2','Cluster 3'), col=c("#446455", "#FDD262", "#D3DDDC"), pch=19)
+
+# plot with logged
+plot(log(dados_viz$GDP_Per_Capita), dados_viz$Happiness, col=colors, pch=19, main='K-means clusters', xlab='GDP per capita (log)', ylab='Life Satisfaction')
+legend('right', legend=c('Cluster 1', 'Cluster 2','Cluster 3', 'Portugal'), col=c("#446455", "#FDD262", "#D3DDDC"), pch=19)
+dev.off()
 
 # Plotting the continents to compare
 ggplot(dados_viz, aes(x=log(GDP_Per_Capita), y=Happiness, colour=Continent))+geom_point()
