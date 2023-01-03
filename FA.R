@@ -20,8 +20,8 @@ dados <- time_used[, -1]
 par(mfrow = c(3, 5))
 
 for (i in colnames(dados)) { # for-loop over columns
-  # hist(dados[[i]], main = i, col = "#5E2B97") #slides
-  hist(dados[[i]], main = i, col = "#446455") #report
+  # hist(dados[[i]], main = i, col = "#5E2B97") # slides
+  hist(dados[[i]], main = i, col = "#446455") # report
 }
 
 
@@ -76,10 +76,9 @@ print(fit, digits = 2, cutoff = 0.4, sort = TRUE)
 
 par(mfrow = c(1, 2))
 loads2 <- fit_princ$loadings
-# fa.diagram(loads2, col = "#5E2B97") #slides
 fa.diagram(loads2,
-           size = c(8, 6), node.font = c("Helvetica", 14),
-           digits = 1, main = "Using PCA"
+  size = c(8, 6), node.font = c("Helvetica", 14),
+  digits = 1, main = "Using PCA"
 )
 
 
@@ -129,66 +128,3 @@ legend(
   legend = c("-100%", "-75%", "-50%", "-25%", "0%", "25%", "50%", "75%", "100%"),
   fill = colorRampPalette(brewer.pal(9, "PuOr"))(9)
 )
-
-# ## Also not used in cluster after FA section
-# a <- prcomp(fit$scores, scale = TRUE)
-# plot(a$x, col = kmeans_varimax$cluster, pch = 19, main = "kmeans, 5 grupos")
-# text(a$x[, 1],
-#     a$x[, 2] + 0.1,
-#     tmp$Country,
-#     col = "blue"
-# )
-
-
-# ### This was not used on the final version of the article
-# ## Graph Comparing the multipel options of Rotation
-# dados_fa_none <- factanal(dados, factors = 4, rotation = "none")
-# dados_fa_varimax <- factanal(dados, factors = 4, rotation = "varimax")
-# dados_fa_promax <- factanal(dados, factors = 4, rotation = "promax")
-
-# par(mfrow = c(1, 3))
-# plot(dados_fa_none$loadings[, 1],
-#     dados_fa_none$loadings[, 2],
-#     xlab = "Factor 1",
-#     ylab = "Factor 2",
-#     ylim = c(-1, 1),
-#     xlim = c(-1, 1),
-#     main = "No rotation"
-# )
-# text(dados_fa_none$loadings[, 1],
-#     dados_fa_none$loadings[, 2],
-#     colnames(dados),
-#     col = "blue"
-# )
-# abline(h = 0, v = 0)
-
-# plot(dados_fa_varimax$loadings[, 1],
-#     dados_fa_varimax$loadings[, 2],
-#     xlab = "Factor 1",
-#     ylab = "Factor 2",
-#     ylim = c(-1, 1),
-#     xlim = c(-1, 1),
-#     main = "Varimax rotation"
-# )
-
-# text(dados_fa_varimax$loadings[, 1],
-#     dados_fa_varimax$loadings[, 2],
-#     colnames(dados),
-#     col = "blue"
-# )
-# abline(h = 0, v = 0)
-
-# plot(dados_fa_promax$loadings[, 1],
-#     dados_fa_promax$loadings[, 2],
-#     xlab = "Factor 1",
-#     ylab = "Factor 2",
-#     ylim = c(-1, 1),
-#     xlim = c(-1, 1),
-#     main = "Promax rotation"
-# )
-# text(dados_fa_promax$loadings[, 1],
-#     dados_fa_promax$loadings[, 2],
-#     colnames(dados),
-#     col = "blue"
-# )
-# abline(h = 0, v = 0)
