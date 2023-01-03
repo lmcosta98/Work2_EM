@@ -32,8 +32,11 @@ dados_hap_gdp <- tmp[, c(1:2)]
 dados_hap_gdp
 
 
-# Setting color palette
-coul <- colorRampPalette(brewer.pal(3, "PuOr"))(50)
+# Setting color palette for the heatmaps
+coul <- colorRampPalette(brewer.pal(3, "PuOr"))(50) # not used
+
+# Distribution of the answers regarding happiness on the complete dataset
+hist(n_dados$Happiness, xlab = "Happiness", main="Happiness complete dataset", col='lightblue')
 
 
 #### Clustering based on Happiness and GDP #####
@@ -47,7 +50,14 @@ kmeans_hap_gdp # By analyzing the clusters we can see that the countries tend to
                # GDP and happiness do not vary much in around 10 years.
                # To make the results more legible we will cluster only on the happiness data from 2020.
 
-n_dados$cluster <- as.character(kmeans_hap_gdp$cluster)
+##### Must run this commands for the histogram plot to work
+n_dados$cluster <- as.character(kmeans_hap_gdp$cluster) # adding the cluster labels to the data
+# what the first clustering algorithm calls cluster 1 is what is called cluster 2 by the second algorithm
+# so we need to relabel them in order to have correct graphs
+n_dados[n_dados$cluster == '2',]$cluster <- '4'
+n_dados[n_dados$cluster == '1',]$cluster <- '2' 
+n_dados[n_dados$cluster == '4',]$cluster <- '1'
+n_dados
 
 # Plot the silhouette graph
 d <- daisy(n_dados_clust)
@@ -86,7 +96,7 @@ hc_complete = hclust(distances, method="complete") # Trying to obtain clusters t
 #hc_single = hclust(distances, method="single") # Trying to obtain fewer clusters
 dend <- as.dendrogram(hc_complete)
 dend <- dend %>% color_branches(k=4, col=c("red", "blue", "green", '#000000'))
-plot(dend, main="Euclidean distance and furthest neighbour")
+plot(dend, main="Euclidean distance and furthest neighbour", axes=FALSE)
 #plot(hc_complete, hang=-1, main="Distancia euclidiana, e vizinho-mais-afastado")
 dev.off()
 
@@ -109,23 +119,27 @@ plot(log(dados_viz$GDP_Per_Capita), dados_viz$Happiness, col=colors, pch=19, mai
 legend('right', legend=c('Cluster 1', 'Cluster 2','Cluster 3', 'Portugal'), col=c("#446455", "#FDD262", "#D3DDDC"), pch=19)
 dev.off()
 
-# Plotting the continents to compare
-ggplot(dados_viz, aes(x=log(GDP_Per_Capita), y=Happiness, colour=Continent))+geom_point()
-# No real connection could be seen as most of the countries on the dataset are european
+# Plotting the continents to compare to the clusters
+ggplot(dados_viz, aes(x=log(GDP_Per_Capita), y=Happiness, colour=Continent))+geom_point() # No real connection could 
+                                                                                # be seen as most of the countries on the 
+                                                                                # dataset are european
 
-# Plotting the distrution of the answers regarding happines per cluster and also on the complete dataset
-# need to run the code for the first clustering for this to work
-data_clust_1 <- n_dados[n_dados$cluster == '1',]
-data_clust_2 <- n_dados[n_dados$cluster == '2',]
-data_clust_3 <- n_dados[n_dados$cluster == '3',]
-par(mfrow=c(2,2)) # the two algorithms were interchanging cluster 1 and 2, this plots the points correctly
-hist(n_dados$Happiness, xlab = "Happiness", main="Happiness complete dataset", col='lightblue')
-hist(data_clust_2$Happiness, xlab = "Happiness", main="Happiness on cluster 1", col="#446455")
-hist(data_clust_1$Happiness, xlab = "Happiness", main="Happiness on cluster 2", col="#FDD262")
-hist(data_clust_3$Happiness, xlab = "Happiness", main="Happiness on cluster 3", col="#D3DDDC")
-dev.off()
+### Necessary to run the code for the first clustering algorithm for this to work ###
+# Plotting the distribution of the answers regarding happiness per cluster,
+# shown as percentage of answers per cluster.
+ggplot(n_dados, aes(x=Happiness, fill=cluster)) +
+    geom_histogram(aes(y=3*after_stat(density)/sum(after_stat(density))), color='#e9ecef', alpha=0.6, position='identity', bins=10) +
+    scale_y_continuous(labels=scales::percent) +
+    scale_fill_manual(values=c("#446455", "#FDD262", "#D3DDDC")) +
+    labs(title='Happiness answer distribution on the clusters', x='Happiness', y='Percentage of answers per cluster') +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, face='bold')) 
+    
 
 
+
+
+### From this point on are experiments done out of curiosity that led to inconclusive/bad results
 
 #### Clustering based on time spent #####
 
@@ -177,11 +191,12 @@ dist <- as.dist(1 - cols.cor)
 hc_complete = hclust(dist, method="complete")
 dend <- as.dendrogram(hc_complete)
 dend <- dend %>% color_branches(k=4)
-plot(dend, main="Pearson Correlation and nearest neighbour")
+plot(dend, main="Pearson Correlation and nearest neighbour") 
+# no real connection could be found to the Factors or PCs from the other analysis
 
 
-#### Hierarchical Clustering of the variables of the time spent dataset
-# Tried removing the same variables that were removed on Factor analysis
+#### Hierarchical Clustering of the variables of the time spent dataset -> v2
+### Tried removing the same variables that were removed on Factor analysis
 dados_clust_2 <- dados_clust[,-1]
 dados_clust_2 <- dados_clust_2[,-9]
 dados_clust_2 <- dados_clust_2[,-c(10:11)]
@@ -192,6 +207,7 @@ hc_complete = hclust(dist, method="complete")
 dend <- as.dendrogram(hc_complete)
 dend <- dend %>% color_branches(k=4)
 plot(dend, main="Pearson Correlation and nearest neighbour")
+# no real connection could be found to the Factors or PCs from the other analysis
 
 
 
