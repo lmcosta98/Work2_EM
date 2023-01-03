@@ -20,7 +20,8 @@ dados <- time_used[, -1]
 par(mfrow = c(3, 5))
 
 for (i in colnames(dados)) { # for-loop over columns
-  hist(dados[[i]], main = i, col = "#D3DDDC")
+  # hist(dados[[i]], main = i, col = "#5E2B97") #slides
+  hist(dados[[i]], main = i, col = "#446455") #report
 }
 
 
@@ -63,7 +64,7 @@ plotnScree(parallel_analysis)
 n_factors <- 4
 fit_princ <- principal(
   dados,
-  nfactors,
+  n_factors,
   residuals = TRUE,
   rotate = "varimax",
   covar = FALSE,
@@ -75,11 +76,20 @@ print(fit, digits = 2, cutoff = 0.4, sort = TRUE)
 
 par(mfrow = c(1, 2))
 loads2 <- fit_princ$loadings
-fa.diagram(loads2)
+# fa.diagram(loads2, col = "#5E2B97") #slides
+fa.diagram(loads2,
+           size = c(8, 6), node.font = c("Helvetica", 14),
+           digits = 1, main = "Using PCA"
+)
 
 
 loads <- fit$loadings
-fa.diagram(loads)
+fa.diagram(loads,
+  labels = NULL, cut = .3, simple = TRUE,
+  size = c(8, 6), node.font = c("Helvetica", 14),
+  digits = 1, main = "Maximum Likelihood"
+)
+
 
 fit_princ$scores
 fit$scores
@@ -99,7 +109,8 @@ sil_cl <- silhouette(kmeans_varimax$cluster, D)
 rownames(sil_cl) <- tmp$Country
 plot(
   sil_cl,
-  col = c("#446455", "#FDD262", "#D3DDDC"),
+  col = c("#446455", "#FDD262", "#D3DDDC"), # report
+  # col = c("#C77025", "#611BB8", "#7F7F7F"), #Slides
   cex.names = par("cex.axis"),
 )
 
