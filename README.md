@@ -3,9 +3,11 @@
 Report at https://www.overleaf.com/project/6390538a375c917bdfdc30e3
 
 ## Division of work:
-• Conceptualization, work questions - all authors;
-• Clustering, Question 1 - L.C.;
-• PCA, Question 2 - F.V.;
-• FA, Question 3, Dataset Introduction - J.A.;
-• Introduction, Question 4 - T.B;
+Order by the question number:
+- Conceptualization, work questions, conclusions - all authors; 
+- Q1, Clustering - L.C.;
+- Q2, PCA - F.V.;
+- Q3, FA, Dataset Introduction, abstract - J.A.;
+- Q4, Introduction - T.B;
 
+All authors have read and agreed to the published version of the manuscript and slides

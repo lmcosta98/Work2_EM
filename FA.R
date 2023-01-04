@@ -41,11 +41,11 @@ KMO(dados)
 mydat <- dados[, KMO(dados)$MSAi > 0.4] # Get rid of all variables with MSA < 0.50
 dados <- mydat
 KMO(dados)
-
+# cenas
 ## Other options and respective overall MSA
 # 69% Care for household members                        Housework                         Shopping Other unpaid work & volunteering                            Sleep         Other leisure activities
 # 74 % Housework                         Shopping Other unpaid work & volunteering                            Sleep                 Attending events         Other leisure activities
-# 75% Housework                         Shopping Other unpaid work & volunteering                            Sleep         Other leisure activities
+# 75% Housework                         Shopping Other unpaid work & volunteering                            Sleep         Other leisure activities for example
 
 
 ## Bartlett test
