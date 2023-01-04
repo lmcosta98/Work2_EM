@@ -1,22 +1,19 @@
 #install.packages("readxl")
 #install.packages("ggplot2")
-#install.packages("ggfortify")
 #install.packages("NbClust", dependencies = TRUE)
 library(readxl)
 library(ggplot2)
 library(NbClust)
-#library(ggfortify)
+
 d<-read_excel("Time_Use.xlsx")
 par(mfrow = c(1,1))
-#View(d)
+View(d)
 names<-d[1]
+View(names)
 dadosx<-d[,-1]
 pca <- prcomp(dadosx)
 pcas <- prcomp(dadosx,scale=TRUE)
-#biplot(pcas)
 summa=summary(pcas)
-#print(pcas$x[,5])
-#print(pcas[1:2])
 
 
 ###### Find best number os pc's ######
@@ -30,8 +27,6 @@ title(main="Variance Explained Vs Number PC's", col.main="Black", font.main=4)
 
 variance_index<-c(2,5,8,11,14,17,20,23,26,29,32,35,38,41)
 variance_eva <- c(0)
-#print(variance_eva)
-#print(variance_eva[length(variance_eva)])
 for (x in variance_index){
   variance_eva<-append(variance_eva,variance_eva[length(variance_eva)]+round(summary(pcas)$importance[x]*100))
 }
@@ -57,63 +52,37 @@ plot(pcas.data,pch=5) # Check all 5 dim
 biplot(pcas,choices=1:2,pch=15,col=c("blue","red"), cex=0.8,cex.axis=0.7,arrow.len = 0.05,xlab=paste(" PC1  (", (round(100*summa$importance[2,1],digits=1)), " % )"),
        ylab=paste(" PC2  (", (round(100*summa$importance[2,2],digits=1)), " % )"),var.axes=TRUE,  scale=1,  main="biplot")
 
-#Analysing Biplot
-# As we can see the countries with the number 14 and 15 are, respectively,
-# Japan and Korea are the ones that stand out, as they are independent from the rest
-# countries having no similarities. Country number 22(Norway) and 12(Ireland)
-# also stand out for independence, it is clear that they no longer stand out
-# than Japan and Korea, however, these are also independent. We can say
-# it is well known that countries 32(India),24(Portugal),19(Mexico),33(SouthAfrica),
-# 17(Lithuania) are quite similar to each other. The countries 28(Turkey), 31(China),
-# 16(Latvia), 25(Slovenia) and 2(Austria) are quite similar between them.
-# Countries 4(Canada),23(Poland),30(USA),6(Estonia),21(New zealand),1(Australia),
-# 5(Denmark),26(Spain),are similar to each other. The countries 18(Luxembourg),27(Sweden),
-# 3(Belgium),13(Italy), 9(Germany),7(Finland),29(UK),20(Netherlands), are similar to each other.
-# 8(France), 11(Hungary),10(Greece) are also another group.
-
-
-
-
 ############### Cluster ################
 library(NbClust)
 a=prcomp(dadosx, scale=TRUE)
 print(a)
-dados2G<-kmeans(a$x, 5)
+dados2G<-kmeans(a$x, 5, nstart=20)
 dados2G
 
 #Visualizar os cluster da k-medias:
 str(dados2G)
 a=prcomp(dadosx, scale=TRUE)
-#nc <- NbClust(a$x,min.nc=3,max.nc=15,method="kmeans")
-print(dados2G$cluster)
-colors <- c()
-for (z in dados2G$cluster){
-  if (z==1){
-    colors<-append(colors,'#00FF00')
-  }
-  if (z==2){
-    colors<-append(colors,'#446455')
-  }
-  if (z==3){
-    colors<-append(colors,'#FDD262')
-  }
-  if (z==4){
-    colors<-append(colors,'#D3DDDC')
-  }
-  if (z==5){
-    colors<-append(colors,'#000000')
-  }
-}
-print(colors)
-#  ("#00FF00","#446455","#FDD262", "#D3DDDC","#000000")
-plot(a$x[,1:5], col = dados2G$cluster,pch=19, main="kmeans, 5 grupos")
+#nc <- NbClust(a$x,min.nc=3,max.nc=15,method="kmeans)
+vcol=c("#65237D","#A875BA","#C4C3E0", "#D19852","#A85E03")
+plot(a$x[,1:5], col = vcol[dados2G$cluster],pch=19, main="kmeans, 5 grupos")
+
 #install.packages("cluster")
 library(cluster)
 D <- daisy(dadosx)
 sil_cl <- silhouette(dados2G$cluster, D)
 rownames(sil_cl) <- names$Country
-plot(sil_cl, col = c("#00FF00","#446455","#FDD262", "#D3DDDC","#000000"),cex.names = par("cex.axis"))
+plot(sil_cl, col = c("#65237D","#A875BA","#C4C3E0", "#D19852","#A85E03"),cex.names = par("cex.axis"))
 
+#Check important Eigen Vectors in PCA#
+
+library(nFactors)
+library(psych)
+library(GPArotation)
+n_factors <-5
+fit_princ <-principal(dadosx,n_factors,residuals=TRUE,rotate="none",covar=FALSE,)
+loads2 <- fit_princ$loadings
+# fa.diagram(loads2,col="#5E2B97") #Slides
+fa.diagram(loads2,size=c(8,6),node.font=c("Helvetica",14),digits=1,main="Using PCA")
 
 #HEATMAP
 library(RColorBrewer)
@@ -123,69 +92,16 @@ cen <- a$x[,1:5]
 rownames(cen) <- names$Country
 colnames(cen) <- c("PC1", "PC2", "PC3", "PC4","PC5")
 heatmap(cen, scale = "column", col = coul)
-abline(h = 0.685, col = "red", lwd = 2, lty = 2)
-abline(h = 0.60, col = "red", lwd = 2, lty = 2)
+abline(h = 0.4, col = "red", lwd = 2, lty = 2)
+abline(h = 10, col = "red", lwd = 2, lty = 2)
+abline(h = 13, col = "red", lwd = 2, lty = 2)
+abline(h = 16.5, col = "red", lwd = 2, lty = 2)
+abline(h = 35.5, col = "red", lwd = 2, lty = 2)
+abline(h = 37.1, col = "red", lwd = 2, lty = 2)
+
 legend(
   0, 1,
   ncol = 3,
   legend = c("-100%", "-75%", "-50%", "-25%", "0%", "25%", "50%", "75%", "100%"),
   fill = colorRampPalette(brewer.pal(9, "PuOr"))(9)
 )
-
-#autoplot(, x = 1, y = 2, colour = "Species",
-#         loadings = TRUE, loadings.label = TRUE,
-#         loadings.colour = c("blue", "red", NA, NA),
-#         loadings.label.colour = c("blue", "red", NA, NA),
-#         main = "biplot")
-
-
-
-# d[22,]$Country
-# cor(dadosx,a$x)
-
-######### Trying To add more PC's Into one graph ############
-require(graphics)
-
-par(pty="s",
-    cex.main=1.2,
-    cex.lab=1,
-    font.main=2,
-    font.lab=2,
-    family="sans",
-    col.main="gray10",
-    col.lab="gray10",
-    fg="gray10",
-    las=1)
-
-plot.new()
-plot.window(xlim=c(-6,6),
-            ylim=c(-6,6),
-            zli~m=c(-6,6),
-            asp=1)
-
-axis(side=1,
-     at=c(-6,-3,0,3,6),
-     labels=TRUE)
-
-axis(side=2,
-     at=c(-6,-3,0,3,6),
-     labels=TRUE)
-axis(side=3,
-     at=c(-6,-3,0,3,6),
-     labels=TRUE)
-
-title(main = "Biplot for PCs",
-      line=3,
-      adj=0)
-title(xlab=paste(" PC1  (", round(summary(pcas)$importance[2]*100,digits=1), " % )",sep=""),
-      ylab=paste(" PC2  (", round(summary(pcas)$importance[5]*100,digits=1), " % )",sep=""),
-      #zlab=paste(" PC3  (", round(summary(pcas)$importance[8]*100,digits=1), " % )",sep=""),
-      line=2,
-      adj=0.5)
-
-points(x=pcas$x[,1:5],
-       pch=c(rep(16,times=1),
-             rep(17,times=1)),
-       cex=1,
-       col=c(rep("darkcyan",times=1),
-             rep("orangered",times=1)))
