@@ -53,7 +53,9 @@ kmeans_hap_gdp # By analyzing the clusters we can see that the countries tend to
 ##### Must run this commands for the histogram plot to work
 n_dados$cluster <- as.character(kmeans_hap_gdp$cluster) # adding the cluster labels to the data
 # what the first clustering algorithm calls cluster 1 is what is called cluster 2 by the second algorithm
-# so we need to relabel them in order to have correct graphs
+# so we need to relabel them in order to have correct graphs 
+# This values might change in each run, so these are the ones that were used
+# for creating the images for report and presentation
 n_dados[n_dados$cluster == '2',]$cluster <- '4'
 n_dados[n_dados$cluster == '1',]$cluster <- '2' 
 n_dados[n_dados$cluster == '4',]$cluster <- '1'
@@ -79,6 +81,8 @@ heatmap(as.matrix(n_dados_clust), scale = "column", col = coul)
 nc <- NbClust(dados_hap_gdp, min.nc = 2, max.nc = 15, method = "kmeans") # Ideal number found is 3 clusters
 kmeans_hap_gdp_2020 <- kmeans(dados_hap_gdp, 3, nstart = 20)
 kmeans_hap_gdp_2020 # By analyzing the clusters we can see t
+
+#plot silhouette
 d <- daisy(dados_hap_gdp)
 sil <- silhouette(kmeans_hap_gdp_2020$cluster, d)
 rownames(sil) <- dados$Countries
@@ -87,7 +91,7 @@ plot(sil, col= c("#446455", "#FDD262", "#D3DDDC"))
 res=cluster.stats(dist(dados_hap_gdp),clustering=kmeans_hap_gdp_2020$cluster)
 resultadoIndices <- matrix(c(res$corrected.rand,res$avg.silwidth), byrow=TRUE,1,2)
 colnames(resultadoIndices) <- c("ARI","avg.Silhw")
-round(resultadoIndices, 3) # Small avg sil
+round(resultadoIndices, 3) # 0.53 which is good
 
 heatmap(as.matrix(dados_hap_gdp), scale = "column", col = c("#446455", "#FDD262", "#D3DDDC", '#000000'))
 
@@ -116,7 +120,7 @@ legend('right', legend=c('Cluster 1', 'Cluster 2','Cluster 3'), col=c("#446455",
 
 # plot with logged
 plot(log(dados_viz$GDP_Per_Capita), dados_viz$Happiness, col=colors, pch=19, main='K-means clusters', xlab='GDP per capita (log)', ylab='Life Satisfaction')
-legend('right', legend=c('Cluster 1', 'Cluster 2','Cluster 3', 'Portugal'), col=c("#446455", "#FDD262", "#D3DDDC"), pch=19)
+legend('right', legend=c('Cluster 1', 'Cluster 2','Cluster 3'), col=c("#446455", "#FDD262", "#D3DDDC"), pch=19)
 dev.off()
 
 # Plotting the continents to compare to the clusters
