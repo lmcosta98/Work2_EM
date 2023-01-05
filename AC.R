@@ -13,6 +13,7 @@ library(ggplot2)
 library(viridis)
 library(RColorBrewer)
 library(dendextend)
+library("ggpubr")
 
 # Load the datasets
 dados <-read.csv("/Users/luismiguel/Desktop/Uni/EM/2022/Work2_EM/datasets/Time_Happiness_GDP.csv") # dataset for only 2020
@@ -128,20 +129,46 @@ ggplot(dados_viz, aes(x=log(GDP_Per_Capita), y=Happiness, colour=Continent))+geo
                                                                                 # be seen as most of the countries on the 
                                                                                 # dataset are european
 
+d_1 <- n_dados[n_dados$cluster == '1',]
+d_2 <- n_dados[n_dados$cluster == '2',]
+d_3 <- n_dados[n_dados$cluster == '3',]
+
 ### Necessary to run the code for the first clustering algorithm for this to work ###
 # Plotting the distribution of the answers regarding happiness per cluster,
 # shown as percentage of answers per cluster.
-ggplot(n_dados, aes(x=Happiness, fill=cluster)) +
-    geom_histogram(aes(y=3*after_stat(density)/sum(after_stat(density))), color='#e9ecef', alpha=0.6, position='identity', bins=10) +
+
+all <- ggplot(n_dados, aes(x=Happiness, fill=cluster)) +
+    geom_histogram(aes(y=3*after_stat(density)/sum(after_stat(density))), color='black', alpha=0.6, position='identity', breaks=seq(3,8.5,0.5)) +
     scale_y_continuous(labels=scales::percent) +
     scale_fill_manual(values=c("#446455", "#FDD262", "#D3DDDC")) +
-    labs(title='Happiness answer distribution on the clusters', x='Happiness', y='Percentage of answers per cluster') +
+    labs(title='All clusters', x='Happiness', y='Percentage of answers per cluster') +
     theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5, face='bold')) 
+    theme(plot.title = element_text(hjust = 0.5, face='bold'))
+
+c1 <- ggplot(d_1, aes(x=Happiness)) +
+    geom_histogram(aes(y=after_stat(count) / sum(after_stat(count))), breaks=seq(3,8.5,0.5), color='black', alpha=0.6, fill="#446455") +
+    scale_y_continuous(labels=scales::percent) +
+    labs(title='Cluster 1', x='Happiness', y='% of answers') +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, face='bold'))
     
+c2 <- ggplot(d_2, aes(x=Happiness)) +
+    geom_histogram(aes(y=after_stat(count) / sum(after_stat(count))), breaks=seq(3,8.5,0.5), color='black', alpha=0.6, fill="#FDD262") +
+    scale_y_continuous(labels=scales::percent) +
+    labs(title='Cluster 2', x='Happiness', y='% of answers') +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, face='bold'))
 
+c3 <- ggplot(d_3, aes(x=Happiness)) +
+    geom_histogram(aes(y=after_stat(count) / sum(after_stat(count))),  breaks=seq(3,8.5,0.5), color='black', alpha=0.6, fill="#D3DDDC") +
+    scale_y_continuous(labels=scales::percent) +
+    labs(title='Cluster 3', x='Happiness', y='% of answers') +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, face='bold'))
 
-
+ggarrange(all, 
+          ggarrange(c1, c2, c3, nrow=3, ncol=1),
+          ncol = 2, nrow = 1)
 
 ### From this point on are experiments done out of curiosity that led to inconclusive/bad results
 
