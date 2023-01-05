@@ -190,7 +190,7 @@ heatmap(as.matrix(dados_clust), scale = "column", col = coul)
 
 
 #### Hierarchical Clustering of the variables of the time spent dataset
-cols.cor <- cor(dados_clust_2, use = "pairwise.complete.obs", method = "pearson") # using pearson correlation for clustering variables
+cols.cor <- cor(dados_clust, use = "pairwise.complete.obs", method = "pearson") # using pearson correlation for clustering variables
 dist <- as.dist(1 - cols.cor)
 hc_complete = hclust(dist, method="complete")
 dend <- as.dendrogram(hc_complete)
