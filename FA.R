@@ -1,3 +1,4 @@
+# Install all the dependencies
 install.packages(c("wesanderson", "NbClust", "nFactors", "GPArotation", "psych"), dependencies = TRUE)
 
 library(nFactors)
@@ -41,7 +42,6 @@ KMO(dados)
 mydat <- dados[, KMO(dados)$MSAi > 0.4] # Get rid of all variables with MSA < 0.50
 dados <- mydat
 KMO(dados)
-# cenas
 ## Other options and respective overall MSA
 # 69% Care for household members                        Housework                         Shopping Other unpaid work & volunteering                            Sleep         Other leisure activities
 # 74 % Housework                         Shopping Other unpaid work & volunteering                            Sleep                 Attending events         Other leisure activities
@@ -71,7 +71,7 @@ fit_princ <- principal(
 )
 print(fit_princ, digits = 2, cutoff = 0.4, sort = TRUE)
 
-fit <- factanal(dados, n_factors, rotation = "varimax", scores = c("Bartlett"))
+fit <- factanal(dados, covmat = r_matrix, n_factors, rotation = "varimax", scores = c("Bartlett"))
 print(fit, digits = 2, cutoff = 0.4, sort = TRUE)
 
 par(mfrow = c(1, 2))
