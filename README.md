@@ -8,6 +8,6 @@ Order by the question number:
 - Q1, Clustering - L.C.;
 - Q2, PCA - F.V.;
 - Q3, FA, Dataset Introduction, abstract - J.A.;
-- Q4, Introduction,Problem Motivation, PCA, Clustering - T.B;
+- Q4, Introduction, Problem Motivation, PCA, Clustering - T.B;
 
 All authors have read and agreed to the published version of the manuscript and slides
